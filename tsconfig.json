@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2020",
     "module": "ESNext",
-    "skipLibCheck": true,
     "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "strict": true,
+    "noImplicitAny": false
   },
   "include": [
     "src"

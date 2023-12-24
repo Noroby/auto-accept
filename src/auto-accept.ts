@@ -16,8 +16,8 @@ export function initAutoAccept() {
   })
 }
 
-export function listenAutoAccept(socket : PenguSocket) {
-  socket.observe('/lol-gameflow/v1/gameflow-phase', (data) => {
+export function listenAutoAccept(socket : any) {
+  socket.observe('/lol-gameflow/v1/gameflow-phase', (data: { data: string }) => {
     if (data.data === 'ReadyCheck' && DataStore.get("auto-accept")) {
       fetch("/lol-matchmaking/v1/ready-check/accept", {
         method: "POST",

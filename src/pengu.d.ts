@@ -1,84 +1,113 @@
+// internal types
 
-// function openAssetsFolder(): void
-// function openPluginsFolder(): void
-// function openDevTools(remote?: boolean): void
-function reloadClient(): void
-// function restartClient(): void
-// var __llver: string
-
-// namespace AuthCallback {
-//   function createURL(): string
-//   function readResponse(url: string, timeout: number): Promise<string | null>
-// }
-
-namespace CommandBar {
-  function addAction(action: Action): void
-  function show(): void
-  function update(): void
+interface Plugin {
+  init?: (context: any) => any
+  load?: () => any
+  default?: Function | any
 }
 
-namespace DataStore {
-  function has(key: string): boolean
-  function get(key: string, fallback?: any): any
-  function set(key: string, value: any): boolean
-  function remove(key: string): boolean
+interface RcpAnnouceEvent extends CustomEvent {
+  errorHandler: () => any
+  registrationHandler: (registrar: (e) => Promise<any>) => Promise<any> | void
 }
 
-// namespace Effect {
-//   type EffectName = 'mica' | 'acrylic' | 'unified' | 'blurbehind'
-//   const current: EffectName | null
-//   function apply(name: EffectName): boolean
-//   function apply(
-//     name: Exclude<EffectName, 'mica'>,
-//     options: { color: string },
-//   ): boolean
-//   function clear(): void
-//   function on(
-//     event: 'apply',
-//     listener: (name: string, options?: object) => any,
-//   ): void
-//   function on(event: 'clear', listener: () => any): void
-//   function off(event: 'apply' | 'clear', listener: () => any): void
-// }
-
-namespace Toast {
-  function success(message: string): void
-}
+// built-in types
 
 interface Action {
-  id?: string       // (optional) an unique idetifier for the action
-  name: string      // action's name
-  legend?: string   // (optional) action's note/legend or shortcut key
-  tags?: string[]   // (optional) tags or keywords to search
-  icon?: string     // (optional) <svg> HTML tag in string
-  group?: string    // (optional) group name
-  hidden?: boolean  // (optional) hide the action, except for search results
-  perform?: (id?: string) => any  // called when the action is executed 
+  id?: string
+  name: string | (() => string)
+  legend?: string | (() => string)
+  tags?: string[]
+  icon?: string
+  group?: string | (() => string)
+  hidden?: boolean
+  perform?: (id?: string) => any
 }
 
-// interface PenguRCP {
-//   preInit(name: string, callback: () => any)
-//   postInit(name: string, callback: (api: any) => any)
-//   whenReady(name: string): Promise<any>
-//   whenReady(names: string[]): Promise<any[]>
-// }
-
-interface PenguContext {
-  // readonly rcp: PenguRCP
-  readonly socket: PenguSocket
+interface CommandBar {
+  addAction: (action) => void
+  show: () => void
+  update: () => void
 }
 
-interface EventData {
-  data: any
-  uri: string
-  eventType: 'Create' | 'Update' | 'Delete'
+interface Toast {
+  success: (message: string) => void
+  error: (message: string) => void
+  promise: <T>(
+      promise: Promise<T>,
+      msg: { loading: string, success: string, error: string }
+  ) => Promise<T>
 }
 
-interface ApiListener {
-  (message: EventData): void
+interface DataStore {
+  has: (key: string) => boolean
+  get: <T>(key: string, fallback?: T) => T | undefined
+  set: (key: string, value: any) => boolean
+  remove: (key: string) => boolean
 }
 
-interface PenguSocket {
-  observe(api: string, listener: ApiListener): { disconnect: () => void }
-  disconnect(api: string, listener: ApiListener)
+type ThemeName = 'light' | 'dark';
+type EffectName = 'mica' | 'blurbehind' | 'blur' | 'acrylic' | 'unified' | 'transparent';
+
+interface Effect {
+  get current(): EffectName | null
+  apply: (name: EffectName, options?: any) => boolean
+  clear: () => void
+  setTheme: (theme: ThemeName) => boolean
+}
+
+interface FileStat {
+  fileName: string
+  length: number
+  isDir: boolean
+}
+
+interface PluginFS {
+  read: (path: string) => Promise<string | undefined>
+  write: (path: string, content: string, enableAppendMode: boolean) => Promise<boolean>
+  mkdir: (path: string) => Promise<boolean>
+  stat: (path: string) => Promise<FileStat | undefined>
+  ls: (path: string) => Promise<string[] | undefined>
+  rm: (path: string, recursively: boolean) => Promise<number>
+}
+
+// globals
+
+interface Pengu {
+  version: string
+  superPotato: boolean
+  plugins: string[]
+  fs: PluginFS
+}
+
+declare const DataStore: DataStore;
+declare const CommandBar: CommandBar;
+declare const Toast: Toast;
+declare const Effect: Effect;
+declare const Pengu: Pengu;
+
+declare const openDevTools: (remote?: boolean) => void;
+declare const openAssetsFolder: () => void;
+declare const openPluginsFolder: (path?: string) => boolean;
+declare const reloadClient: () => void;
+declare const restartClient: () => void;
+declare const getScriptPath: () => string | undefined;
+declare const __llver: string;
+
+declare interface Window {
+
+  DataStore: DataStore;
+  CommandBar: CommandBar;
+  Toast: Toast;
+  Effect: Effect;
+  Pengu: Pengu;
+
+
+  openDevTools: typeof openDevTools;
+  openAssetsFolder: typeof openAssetsFolder;
+  openPluginsFolder: typeof openPluginsFolder;
+  reloadClient: typeof reloadClient;
+  restartClient: typeof restartClient;
+  getScriptPath: typeof getScriptPath;
+  __llver: string;
 }
